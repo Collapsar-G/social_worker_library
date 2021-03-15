@@ -12,7 +12,7 @@ resources_add_list = {"GroupData": ["./DATA/GroupData", "QQNum,QunNum", "id,QQNu
 SQL_config = {'host': 'localhost',
               'port': 3306,
               'user': 'root',
-              'passwd': '****',
+              'passwd': '8520',
               'charset': 'utf8mb4',
               'local_infile': 1
               }
