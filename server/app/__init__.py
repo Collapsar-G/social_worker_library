@@ -10,6 +10,7 @@ def create_app(name):
     """
     app = Flask(__name__, static_folder='../static')
 
+
     # 配置
     app.config.from_object(config_map[name])
 
@@ -18,5 +19,6 @@ def create_app(name):
     from app.api.search import search
 
     app.register_blueprint(search, url_prefix='/s')
+
 
     return app

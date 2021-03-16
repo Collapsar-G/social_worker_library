@@ -6,16 +6,11 @@
 
 # @describe: 查询api
 
-import os
-import time
-import traceback
-
-from flask import Blueprint, request, jsonify, url_for, session
-
 import json
-import pymysql
 
+import pymysql
 from config import SQL_config, DATABASE
+from flask import Blueprint, request, jsonify
 
 conn = pymysql.connect(**SQL_config)
 cur = conn.cursor()
@@ -31,9 +26,9 @@ cur.execute('SET character_set_connection=utf8;')
 search = Blueprint('search', __name__)
 
 
-@search.route('/')
+@search.route('/', methods=['POST'])
 def test():
-    return "测试成功"
+    return jsonify(code=200, msg='Success!')
 
 
 @search.route('/config/', methods=['POST'])
@@ -44,13 +39,21 @@ def get_config():
         config = json.loads(content)
         f.close()
     except():
-        return jsonify(code='400', msg='服务器连接错误！！！')
+        return jsonify(code=400, msg='服务器连接错误！！！')
     resources_list = {}
     for key in config["resources_list"]:
         resources_list[key] = {}
         resources_list[key]["search_key"] = list(config["resources_list"][key][0].split(sep=',', maxsplit=-1))
+        temp = resources_list[key]["search_key"]
+        resources_list[key]["search_key"] = {}
+        for i in temp:
+            resources_list[key]["search_key"][i] = ''
         resources_list[key]["result_class"] = list(config["resources_list"][key][1].split(sep=',', maxsplit=-1))
-    return jsonify(code='200', msg='Success!', config=resources_list)
+        temp = resources_list[key]["result_class"]
+        resources_list[key]["result_class"] = {}
+        for i in temp:
+            resources_list[key]["result_class"][i] = None
+    return jsonify(code=200, msg='Success!', config=resources_list)
 
 
 @search.route('/search/', methods=['POST'])
@@ -79,7 +82,7 @@ def searchdata():
                     temp = param.get(index)
                 except():
                     continue
-                if temp is not None:
+                if (temp is not None) and (temp != ''):
                     content[index] = temp
 
             if not content:
@@ -101,7 +104,7 @@ def searchdata():
                 except():
                     return jsonify(code=400, msg="数据读取错误", data=sql)
                 if result == 0:
-                    return jsonify(code=200, msg="恭喜您，未查询到您的数据！")
+                    return jsonify(code=300, msg="恭喜您，未查询到您的数据！")
                 else:
                     print(data)
                     return jsonify(code=200, msg="success", data=data, class_data=class_data)

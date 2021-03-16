@@ -8,10 +8,10 @@
 
 from app import create_app
 from flask_script import Manager
-
+from flask_cors import CORS
 
 app = create_app('dev')
-
+CORS(app)
 manager = Manager(app)
 
 """
