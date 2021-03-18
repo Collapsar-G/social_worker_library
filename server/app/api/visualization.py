@@ -69,12 +69,12 @@ def get_weight(key, value, n):
     SQL = ""
     ls = []
     SQL = "select * from %s where %s= %s " % (table, key, "'"+value+"'")
-    print(SQL)
+    # print(SQL)
     try:
         result = cur.execute(SQL)
-        print(result)
+        # print(result)
         data = cur.fetchall()
-        print(data)
+        # print(data)
         conn.commit()
 
     except():
@@ -183,7 +183,7 @@ def result2bs64(key, value, n=1):
         pos = nx.spring_layout(G, iterations=1000)
         nx.draw(G, pos, with_labels=True, node_size=20, node_color="#F39A9D", edge_color="#FFEAEC", alpha=1.0,
                 font_size=8,
-                font_color='#6DB1BF', width=2)
+                font_color='#6DB1BF', width=1)
         # plt.show()
         save_file = BytesIO()
         plt.savefig(save_file, format='png')

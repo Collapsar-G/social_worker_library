@@ -354,7 +354,7 @@ visualize(G)
 
 测试效果如下：
 
-![Video_20210318_102322_895](C:\Users\20180\Desktop\Video_20210318_102322_895.gif)
+![Video_20210318_102322_895](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318195301.gif)
 
 效果不太理想，所以改用`networkx`库来生成静态图像：
 
@@ -365,6 +365,67 @@ visualize(G)
 具体代码如下：
 
 ```python
+import json
+from flask import Blueprint, request, jsonify
+import networkx as nx
+import matplotlib.pyplot as plt
+import pymysql
+from io import BytesIO
+import base64
+from config import SQL_config, DATABASE
+import simplejson
+
+# SQL_config = {'host': 'localhost',
+#               'port': 3306,
+#               'user': 'root',
+#               'passwd': '8520',
+#               'charset': 'utf8mb4',
+#               'local_infile': 1
+#               }
+# DATABASE = 'ssdata'
+
+## 显示中文,及字体设置
+plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+plt.rcParams['font.size'] = 10
+plt.rcParams['axes.unicode_minus'] = False
+
+conn = pymysql.connect(**SQL_config)
+cur = conn.cursor()
+# 使用数据库
+cur.execute('use %s' % DATABASE)
+# 设置编码格式
+cur.execute('SET NAMES utf8;')
+cur.execute('SET character_set_connection=utf8;')
+
+visualization = Blueprint('visualization', __name__)
+
+
+@visualization.route('/visualization/', methods=['POST'])
+def visualizationdata():
+    """
+        查询接口
+        @param content:数据的查询
+        @return code(200=正常返回，400=错误),data
+    """
+    try:
+        param = request.get_json()
+        key = param.get('key')
+        value = param.get('value')
+    except:
+        return jsonify(code=400, msg='参数错误')
+    if key not in ["QQNum", "QunNum"]:
+        return jsonify(code=400, msg='参数错误')
+    result = result2bs64(key, value, 1)
+    if result["code"] == 400:
+        return jsonify(code=400, msg='参数错误')
+    elif result["code"] == 200:
+        return jsonify(code=200, msg='successful!', image=result["image"], id2data=result["id2data"])
+    elif result["code"] == 300:
+        return jsonify(code=300, msg="未查询到相关数据")
+    else:
+        return jsonify(code=400, msg='未知错误')
+
+
 def get_weight(key, value, n):
     f = open('./config.json', 'r')
     content = f.read()
@@ -374,6 +435,19 @@ def get_weight(key, value, n):
     # print("success")
     SQL = ""
     ls = []
+    SQL = "select * from %s where %s= %s " % (table, key, "'"+value+"'")
+    print(SQL)
+    try:
+        result = cur.execute(SQL)
+        print(result)
+        data = cur.fetchall()
+        print(data)
+        conn.commit()
+
+    except():
+        return {"code": 400, "msg": "数据读取错误"}
+    if result == 0:
+        return {"code": 300, "msg": "未查询到相关数据"}
     qqnum_ls = ["QQNum", "QunNum"]
     qunnum_ls = ["QunNum", "QQNum"]
     label2id = {}
@@ -382,9 +456,9 @@ def get_weight(key, value, n):
     node = 0
     G = nx.Graph()
     G.add_node(node)
-    label2id[str(key + value)] = node
-    id2data[node] = str(key + value)
-    ls_label2id.append(str(key + value))
+    label2id[str(key + ":" + value)] = node
+    id2data[node] = str(key + ":" + value)
+    ls_label2id.append(str(key + ":" + value))
     node += 1
     if key == "QQNum":
         # SQL = "select * from %s where %s=%s " % (database, key, value)
@@ -397,7 +471,7 @@ def get_weight(key, value, n):
             # print(i)
             temp = []
             for ve in v:
-                SQL = "select * from %s where %s=%s " % (table, ls[i], ve)
+                SQL = "select * from %s where %s=%s " % (table, ls[i], "'"+ve+"'")
                 try:
                     result = cur.execute(SQL)
                     data = cur.fetchall()
@@ -411,17 +485,17 @@ def get_weight(key, value, n):
                     for h in data:
                         te = h[list(config["resources_list"][table][1].split(sep=',', maxsplit=-1)).index(ls2[i])]
                         temp.append(te)
-                        if str(ls2[i] + te) in ls_label2id:
+                        if str(ls2[i] + ":" + te) in ls_label2id:
                             # G.add_node(label2id[str(ls2[i] + te)])
-                            G.add_edge(label2id[str(ls[i] + ve)], label2id[str(ls2[i] + te)])
+                            G.add_edge(label2id[str(ls[i] + ":" + ve)], label2id[str(ls2[i] + ":" + te)])
                         else:
                             G.add_node(node)
 
-                            ls_label2id.append(str(ls2[i] + te))
-                            label2id[str(ls2[i] + te)] = node
-                            id2data[node] = str(ls2[i] + te)
+                            ls_label2id.append(str(ls2[i] + ":" + te))
+                            label2id[str(ls2[i] + ":" + te)] = node
+                            id2data[node] = str(ls2[i] + ":" + te)
                             node += 1
-                            G.add_edge(label2id[str(ls[i] + ve)], label2id[str(ls2[i] + te)])
+                            G.add_edge(label2id[str(ls[i] + ":" + ve)], label2id[str(ls2[i] + ":" + te)])
 
             # print(temp)
             v = temp[:]
@@ -437,7 +511,7 @@ def get_weight(key, value, n):
             # print(i)
             temp = []
             for ve in v:
-                SQL = "select * from %s where %s=%s " % (table, ls[i], ve)
+                SQL = "select * from %s where %s=%s " % (table, ls[i], "'"+ve+"'")
                 try:
                     result = cur.execute(SQL)
                     data = cur.fetchall()
@@ -451,17 +525,17 @@ def get_weight(key, value, n):
                     for h in data:
                         te = h[list(config["resources_list"][table][1].split(sep=',', maxsplit=-1)).index(ls2[i])]
                         temp.append(te)
-                        if str(ls2[i] + te) in ls_label2id:
+                        if str(ls2[i] + ":" + te) in ls_label2id:
                             # G.add_node(label2id[str(ls2[i] + te)])
-                            G.add_edge(label2id[str(ls[i] + ve)], label2id[str(ls2[i] + te)])
+                            G.add_edge(label2id[str(ls[i] + ":" + ve)], label2id[str(ls2[i] + ":" + te)])
                         else:
                             G.add_node(node)
 
-                            ls_label2id.append(str(ls2[i] + te))
-                            label2id[str(ls2[i] + te)] = node
-                            id2data[node] = str(ls2[i] + te)
+                            ls_label2id.append(str(ls2[i] + ":" + te))
+                            label2id[str(ls2[i] + ":" + te)] = node
+                            id2data[node] = str(ls2[i] + ":" + te)
                             node += 1
-                            G.add_edge(label2id[str(ls[i] + ve)], label2id[str(ls2[i] + te)])
+                            G.add_edge(label2id[str(ls[i] + ":" + ve)], label2id[str(ls2[i] + ":" + te)])
 
             # print(temp)
             v = temp[:]
@@ -469,11 +543,13 @@ def get_weight(key, value, n):
 
 
 def result2bs64(key, value, n=1):
-    result = get_weight("QQNum", "100000", 1)
-    if result["code"]==200:
+    print(key, value, n)
+    result = get_weight("QQNum", value, 1)
+    if result["code"] == 200:
         G = result["G"]
         pos = nx.spring_layout(G, iterations=1000)
-        nx.draw(G, pos, with_labels=True, node_size=20, node_color="#F39A9D", edge_color="#FFEAEC", alpha=1.0, font_size=8,
+        nx.draw(G, pos, with_labels=True, node_size=20, node_color="#F39A9D", edge_color="#FFEAEC", alpha=1.0,
+                font_size=8,
                 font_color='#6DB1BF', width=2)
         # plt.show()
         save_file = BytesIO()
@@ -481,15 +557,33 @@ def result2bs64(key, value, n=1):
 
         # 转换base64并以utf8格式输出
         save_file_base64 = base64.b64encode(save_file.getvalue()).decode('utf8')
-        return {"code": 200, "msg": "successful!", "G": G, "id2data": result["id2data"],"image":"data:image/png;base64," + str(save_file_base64)}
+        return {"code": 200, "msg": "successful!", "id2data": result["id2data"],
+                "image": "data:image/png;base64," + str(save_file_base64)}
     else:
         return result
-
 ```
 
+参考资料：[Networkx绘图和整理功能的参数,networkx,画图,函数参数](https://www.pythonf.cn/read/137465)
+
+实现结果：
+
+![image-20210318202415299](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318202415.png)
+
+![image-20210318202538508](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318202538.png)
+
+![image-20210318202626563](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318202626.png)
+
+![image-20210318203004384](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318203004.png)
+
+![image-20210318203017762](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318203017.png)
+
+### Docker部署
+
+> windows下Docker安装出现了bug，暂时还没有配置好Docker环境，暂未实现。
+
+## 总结
+
+基本上实现了数据的自动插入数据库，自动建立索引，在插入新数据时，在`config.py`文件中输入要插入的相关参数，后使用`initialization.py`文件可以实现自动化加载到数据库。前端UI中，只需添加几个数据就可以实现前端界面的更改（社交网络可视化部分改动可能较多）。
 
 
-
-
-## 实现过程中的思考
 
