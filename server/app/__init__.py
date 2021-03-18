@@ -17,8 +17,8 @@ def create_app(name):
     # 接口
 
     from app.api.search import search
-
+    from app.api.visualization import visualization
     app.register_blueprint(search, url_prefix='/s')
-
+    app.register_blueprint(visualization,url_prefix='/v')
 
     return app

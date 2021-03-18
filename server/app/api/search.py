@@ -9,9 +9,9 @@
 import json
 
 import pymysql
-from config import SQL_config, DATABASE
-from flask import Blueprint, request, jsonify
 
+from flask import Blueprint, request, jsonify
+from config import SQL_config, DATABASE
 conn = pymysql.connect(**SQL_config)
 cur = conn.cursor()
 # 使用数据库
@@ -102,7 +102,7 @@ def searchdata():
                     data = cur.fetchall()
                     conn.commit()
                 except():
-                    return jsonify(code=400, msg="数据读取错误", data=sql)
+                    return jsonify(code=400, msg="数据读取错误")
                 if result == 0:
                     return jsonify(code=300, msg="恭喜您，未查询到您的数据！")
                 else:

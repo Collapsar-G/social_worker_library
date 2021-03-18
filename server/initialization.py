@@ -25,6 +25,7 @@ def get_encoding(filename):
     Returns the file encoding format
     """
     with open(filename, 'rb') as f:
+        print(chardet.detect(f.read()))
         return chardet.detect(f.read())['encoding']
 
 
@@ -48,7 +49,7 @@ def load_csv(csv_file_path, table_name, primary_key, database=DATABASE):
     # 编写sql，create_sql负责创建表，data_sql负责导入数据
     create_sql = 'create table if not exists ' + table_name + ' ' + '(' + colum + 'primary key' + '(' + primary_key + ')' + ')' + ' DEFAULT CHARSET=utf8 '
     # create_sql = 'create table if not exists ' + table_name + ' ' + '(' + colum +  ')' + ' DEFAULT CHARSET=utf8'
-    data_sql = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY ',' LINES TERMINATED BY '\\r\\n' " \
+    data_sql = "LOAD DATA LOCAL INFILE '%s' INTO TABLE %s FIELDS TERMINATED BY '\\r' LINES TERMINATED BY '\\r\\n' " \
                "IGNORE 1 LINES" % (csv_file_path, table_name)
     print(data_sql)
     # 使用数据库

@@ -35,7 +35,7 @@
             >
                 <v-tabs-slider color="white"/>
                 <v-tab @click="toQQGroupSearch">数据查询</v-tab>
-                <v-tab @click="toHelloWorld">Hello World</v-tab>
+                <v-tab @click="toHelloWorld">数据可视化</v-tab>
             </v-tabs>
             <v-btn
                     href="https://www.zhihu.com/question/27024854"
