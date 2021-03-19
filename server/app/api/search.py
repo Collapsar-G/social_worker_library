@@ -76,7 +76,7 @@ def searchdata():
         else:
             class_data = list(config["resources_list"][database][1].split(sep=',', maxsplit=-1))
             for index in list(config["resources_list"][database][0].split(sep=',', maxsplit=-1)):
-                print("!!!!!!!!!!!!!!!!!!!!!!!!", index)
+                # print("!!!!!!!!!!!!!!!!!!!!!!!!", index)
                 try:
 
                     temp = param.get(index)
@@ -95,9 +95,9 @@ def searchdata():
                     sql += str(key) + '=' + "'" + str(content[key]) + "'" + " and "
                 key = list(content.keys())[len(content) - 1]
                 sql += str(key) + '=' + "'" + str(content[key]) + "'"
-                print(sql)
+                # print(sql)
                 try:
-                    print(sql)
+                    # print(sql)
                     result = cur.execute(sql)
                     data = cur.fetchall()
                     conn.commit()
@@ -106,7 +106,7 @@ def searchdata():
                 if result == 0:
                     return jsonify(code=300, msg="恭喜您，未查询到您的数据！")
                 else:
-                    print(data)
+                    # print(data)
                     return jsonify(code=200, msg="success", data=data, class_data=class_data)
     except():
         return jsonify(code=400, msg="未知错误")

@@ -35,7 +35,7 @@ def get_weight(key, value, n):
     # print("success")
     SQL = ""
     ls = []
-    print(key,value)
+    # print(key,value)
     SQL = "select * from %s where %s= %s " % (table, key, "'"+value+"'")
     print(SQL)
     try:
@@ -55,6 +55,10 @@ def get_weight(key, value, n):
     id2data = {}
     ls_label2id = []
     node = 0
+
+    G = nx.Graph()
+    G.clear()
+    G.clear_edges()
     G = nx.Graph()
     G.add_node(node)
     label2id[str(key + ":" + value)] = node
@@ -143,9 +147,9 @@ def get_weight(key, value, n):
     return {"code": 200, "msg": "successful!", "G": G, "id2data": id2data}
 
 
-def result2bs64(key, value, n=1):
-    print(key, value, n)
-    result = get_weight(key, value, 1)
+def result2bs64(key, value, n):
+    # print(key, value, n)
+    result = get_weight(key, value, n)
     if result["code"] == 200:
         G = result["G"]
         pos = nx.spring_layout(G, iterations=1000)
@@ -155,9 +159,13 @@ def result2bs64(key, value, n=1):
         # plt.show()
         save_file = BytesIO()
         plt.savefig(save_file, format='png')
+
         G.clear()
+
         # 转换base64并以utf8格式输出
         save_file_base64 = base64.b64encode(save_file.getvalue()).decode('utf8')
+        save_file.close()
+        plt.clf()
         return {"code": 200, "msg": "successful!", "id2data": result["id2data"],
                 "image": "data:image/png;base64," + str(save_file_base64)}
     else:

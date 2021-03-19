@@ -567,6 +567,22 @@ def result2bs64(key, value, n=1):
 
 **warning**：特别要注意的是，由于把生成图的脚本写在了flask的路由里，所以每次生成图片的缓存不会自动清除，每一次查询都会在原图上继续添加节点，在查询资料`G.clear()`可以删除图中的所有结点，但是尝试后不能正常使用，索性将生成图片的函数封装如单独的包 `utils.py`中。
 
+！！！！
+
+发现这个bug还是存在，继续debug，发现在`networks`这个包中调用了`matplotlib.pyplot`来生成图片，所以需要添加代码`plt.clf()`来释放内存。
+
+继续测试发现还是不能正常运行，继续找bug发现自己在生成base64格式的图片时，调用：
+
+```python
+from io import BytesIO
+save_file = BytesIO()
+        plt.savefig(save_file, format='png')
+```
+
+来将图片写入内存，所以需要用`save_file.close()`来释放内存。
+
+继续测试，发现生成的图片恢复正常
+
 ****
 
 实现结果：
@@ -595,5 +611,3 @@ def result2bs64(key, value, n=1):
 
 1. [Networkx绘图和整理功能的参数,networkx,画图,函数参数](https://www.pythonf.cn/read/137465)
 2. [chardet库：识别文件的编码格式](https://zhuanlan.zhihu.com/p/27188439)
-
-3. 

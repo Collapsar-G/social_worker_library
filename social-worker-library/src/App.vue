@@ -133,7 +133,7 @@
 
 <script>
 
-
+import url from './components/url.vue'
     export default {
         name: 'App',
 
@@ -141,7 +141,8 @@
 
         data: () => ({
             dialog: true,
-            connect: false
+            connect: false,
+            globalHttpUrl: url.httpUrl,
         }), created() {
             this.testconnect();
         },
@@ -157,7 +158,7 @@
                 this.connect = false
                 // let params = new FormData()
                 // params.append('imageData', this.imageData)
-                this.axios.post('http://localhost:3268/s/', {}).then((response) => {
+                this.axios.post(that.globalHttpUrl+'s/', {}).then((response) => {
                     console.log(response.data)
                     if (response.data.code === 200) {
                         that.connect = true

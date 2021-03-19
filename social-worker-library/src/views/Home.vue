@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-<!-- 服务器错误提示-->
+        <!-- 服务器错误提示-->
         <div v-if="warncard">
             <v-alert
                     icon="mdi-cloud-alert"
@@ -208,7 +208,7 @@
 
 <script>
     // @ is an alias to /src
-
+    import url from '../components/url.vue'
 
     export default {
         name: 'Home',
@@ -218,6 +218,7 @@
             happy: false,
             error_qq: false,
             error_qun: false,
+            globalHttpUrl: url.httpUrl,
             config: {
                 "GroupData": {
                     "result_class": {
@@ -261,60 +262,65 @@
                 let that = this
                 that.leading = true
                 that.happy = false
-                that.error_qun =false
-                if (that.config.QunInfo.search_key.QunNum !== ""){
+                that.result_quninfo.code = 400
+                that.error_qun = false
+                if (that.config.QunInfo.search_key.QunNum !== "") {
+                    console.log("@@@@@@@@@@@@@@")
 
 
-                this.axios.post('http://localhost:3268/s/search/', {
-                    "database": "QunInfo",
-                    "QunNum": that.config.QunInfo.search_key.QunNum
-                }).then((response) => {
-                    console.log(response.data)
-                    console.log(that.config.QunInfo.search_key)
-                    if (response.data.code === 200) {
-                        that.result_quninfo = response.data
-                        that.result_quninfo.headers = [
-                            {
-                                text: 'QunNum',
-                                align: 'start',
-                                sortable: true,
-                                value: 'qunnum',
-                            },
-                            {text: 'MastQQ', value: 'mastqq'},
-                            {text: 'CreateDate', value: 'createdata'},
-                            {text: 'Title', value: 'tittle'},
-                            {text: 'Class', value: 'class'},
-                            {text: 'QunText', value: 'quntext'},
-                        ]
-                        that.result_quninfo.desserts = []
-                        for (var datai in that.result_quninfo.data) {
-                            var temp = {}
-                            temp.qunnum = that.result_quninfo.data[datai][1]
-                            temp.mastqq = that.result_quninfo.data[datai][2]
-                            temp.createdata = that.result_quninfo.data[datai][3]
-                            temp.tittle = that.result_quninfo.data[datai][4]
-                            temp.class = that.result_quninfo.data[datai][5]
-                            temp.quntext = that.result_quninfo.data[datai][6]
-                            that.result_quninfo.desserts.push(temp)
-                            // console.log("!!!!!!!!!!!!!!!!!!!!!")
-                            // console.log(that.result_groupdata.data[datai])
+                    this.axios.post(that.globalHttpUrl + 's/search/', {
+                        "database": "QunInfo",
+                        "QunNum": that.config.QunInfo.search_key.QunNum
+                    }).then((response) => {
+                        console.log(response.data)
+                        console.log(that.config.QunInfo.search_key)
+                        if (response.data.code === 200) {
+                            that.result_quninfo = response.data
+                            that.result_quninfo.headers = [
+                                {
+                                    text: 'QunNum',
+                                    align: 'start',
+                                    sortable: true,
+                                    value: 'qunnum',
+                                },
+                                {text: 'MastQQ', value: 'mastqq'},
+                                {text: 'CreateDate', value: 'createdata'},
+                                {text: 'Title', value: 'tittle'},
+                                {text: 'Class', value: 'class'},
+                                {text: 'QunText', value: 'quntext'},
+                            ]
+                            that.result_quninfo.desserts = []
+                            for (var datai in that.result_quninfo.data) {
+                                var temp = {}
+                                temp.qunnum = that.result_quninfo.data[datai][1]
+                                temp.mastqq = that.result_quninfo.data[datai][2]
+                                temp.createdata = that.result_quninfo.data[datai][3]
+                                temp.tittle = that.result_quninfo.data[datai][4]
+                                temp.class = that.result_quninfo.data[datai][5]
+                                temp.quntext = that.result_quninfo.data[datai][6]
+                                that.result_quninfo.desserts.push(temp)
+                                // console.log("!!!!!!!!!!!!!!!!!!!!!")
+                                // console.log(that.result_groupdata.data[datai])
+                            }
+                            console.log(that.result_quninfo)
+                        } else if (response.data.code === 300) {
+                            that.happy = true
+                            that.result_quninfo = response.data
                         }
-                        console.log(that.result_quninfo)
-                    } else if (response.data.code === 300) {
-                        that.happy = true
-                        that.result_quninfo = response.data
-                    }
 
-                    that.leading = false
+                        that.leading = false
 
-                }).catch((response) => {
-                    console.log("fail", response);
+                    }).catch((response) => {
+                        console.log("fail", response);
+                        that.leading = false
+                        that.warncard = true
+                    })
+                } else {
+                    that.error_qun = true
                     that.leading = false
-                    that.warncard = true
-                })}
-                that.error_qun = true
-                that.leading = false
-                that.happy = false
+                    that.happy = false
+                    that.result_quninfo.code = 400
+                }
 
 
             },
@@ -322,69 +328,73 @@
                 let that = this
                 that.leading = true
                 that.happy = false
+                that.result_groupdata.code = 400
                 that.error_qq = false
-                if ((that.config.QunInfo.search_key.QunNum !== "")&&(that.config.QunInfo.search_key.QunNum !== "")){
+                if ((that.config.GroupData.search_key.QunNum !== "") || (that.config.GroupData.search_key.QQNum !== "")) {
+                    console.log("@@@@@@@@@@@@@@")
 
+                    this.axios.post(that.globalHttpUrl + 's/search/', {
+                        "database": "GroupData",
+                        "QunNum": that.config.GroupData.search_key.QunNum,
+                        "QQNum": that.config.GroupData.search_key.QQNum
+                    }).then((response) => {
+                        console.log(response.data)
+                        console.log(that.config.GroupData.search_key)
+                        if (response.data.code === 200) {
+                            that.result_groupdata = response.data
+                            that.result_groupdata.headers = [
+                                {
+                                    text: 'QQNum',
+                                    align: 'start',
+                                    sortable: true,
+                                    value: 'qqnum',
+                                },
+                                {text: 'Nick', value: 'nick'},
+                                {text: 'Age', value: 'age'},
+                                {text: 'Gender', value: 'gender'},
+                                {text: 'Auth', value: 'auth'},
+                                {text: 'QunNum', value: 'qunnum'},
+                            ]
+                            that.result_groupdata.desserts = []
+                            for (var datai in that.result_groupdata.data) {
+                                var temp = {}
+                                temp.qqnum = that.result_groupdata.data[datai][1]
+                                temp.nick = that.result_groupdata.data[datai][2]
+                                temp.age = that.result_groupdata.data[datai][3]
+                                temp.gender = that.result_groupdata.data[datai][4]
+                                temp.auth = that.result_groupdata.data[datai][5]
+                                temp.qunnum = that.result_groupdata.data[datai][6]
+                                that.result_groupdata.desserts.push(temp)
+                                // console.log("!!!!!!!!!!!!!!!!!!!!!")
+                                // console.log(that.result_groupdata.data[datai])
+                            }
+                            console.log(that.result_groupdata)
+                        } else if (response.data.code === 300) {
+                            that.happy = true
+                            that.result_groupdata = response.data
 
-                this.axios.post('http://localhost:3268/s/search/', {
-                    "database": "GroupData",
-                    "QunNum": that.config.GroupData.search_key.QunNum,
-                    "QQNum": that.config.GroupData.search_key.QQNum
-                }).then((response) => {
-                    console.log(response.data)
-                    console.log(that.config.GroupData.search_key)
-                    if (response.data.code === 200) {
-                        that.result_groupdata = response.data
-                        that.result_groupdata.headers = [
-                            {
-                                text: 'QQNum',
-                                align: 'start',
-                                sortable: true,
-                                value: 'qqnum',
-                            },
-                            {text: 'Nick', value: 'nick'},
-                            {text: 'Age', value: 'age'},
-                            {text: 'Gender', value: 'gender'},
-                            {text: 'Auth', value: 'auth'},
-                            {text: 'QunNum', value: 'qunnum'},
-                        ]
-                        that.result_groupdata.desserts = []
-                        for (var datai in that.result_groupdata.data) {
-                            var temp = {}
-                            temp.qqnum = that.result_groupdata.data[datai][1]
-                            temp.nick = that.result_groupdata.data[datai][2]
-                            temp.age = that.result_groupdata.data[datai][3]
-                            temp.gender = that.result_groupdata.data[datai][4]
-                            temp.auth = that.result_groupdata.data[datai][5]
-                            temp.qunnum = that.result_groupdata.data[datai][6]
-                            that.result_groupdata.desserts.push(temp)
-                            // console.log("!!!!!!!!!!!!!!!!!!!!!")
-                            // console.log(that.result_groupdata.data[datai])
                         }
-                        console.log(that.result_groupdata)
-                    } else if (response.data.code === 300) {
-                        that.happy = true
-                        that.result_groupdata = response.data
-                    }
 
+                        that.leading = false
+
+                    }).catch((response) => {
+                        console.log("fail", response);
+                        that.leading = false
+                        that.warncard = true
+                    })
+                } else {
+                    that.error_qq = true
                     that.leading = false
-
-                }).catch((response) => {
-                    console.log("fail", response);
-                    that.leading = false
-                    that.warncard = true
-                })}
-                that.error_qq = true
-                that.leading = false
-                that.happy = false
-
+                    that.happy = false
+                    that.result_groupdata.code = 400
+                }
             },
             clc() {
                 let that = this
                 this.leading = true
                 // let params = new FormData()
                 // params.append('imageData', this.imageData)
-                this.axios.post('http://localhost:3268/s/config/', {}).then((response) => {
+                this.axios.post(that.globalHttpUrl + 's/config/', {}).then((response) => {
                     console.log(response.data)
                     if (response.data.code === 200) {
                         // that.config = response.data.config

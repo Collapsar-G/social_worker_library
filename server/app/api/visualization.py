@@ -1,10 +1,5 @@
-
 from flask import Blueprint, request, jsonify
 from utils import result2bs64
-
-
-
-
 
 # SQL_config = {'host': 'localhost',
 #               'port': 3306,
@@ -14,7 +9,6 @@ from utils import result2bs64
 #               'local_infile': 1
 #               }
 # DATABASE = 'ssdata'
-
 
 
 visualization = Blueprint('visualization', __name__)
@@ -35,7 +29,7 @@ def visualizationdata():
         return jsonify(code=400, msg='参数错误')
     if key not in ["QQNum", "QunNum"]:
         return jsonify(code=400, msg='参数错误')
-    result = result2bs64(key, value, 1)
+    result = result2bs64(key, value, 3)
     if result["code"] == 400:
         return jsonify(code=400, msg='参数错误')
     elif result["code"] == 200:
@@ -44,6 +38,3 @@ def visualizationdata():
         return jsonify(code=300, msg="未查询到相关数据")
     else:
         return jsonify(code=400, msg='未知错误')
-
-
-
