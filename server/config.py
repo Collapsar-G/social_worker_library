@@ -6,8 +6,8 @@
 
 # @describe: Project parameters
 
-resources_add_list = {"GroupData": ["./DATA/GroupData", "QQNum,QunNum", "id,QQNum,Nick,Age,Gender,Auth,QunNum"],
-                      "QunInfo": ["./DATA//QunInfo", "QunNum", "id,QunNum,MastQQ,CreateDate,Title,Class,QunText"]}
+resources_add_list = {"GroupData": ["./DATA1/GroupData", "QQNum,QunNum", "id,QQNum,Nick,Age,Gender,Auth,QunNum"],
+                      "QunInfo": ["./DATA1//QunInfo", "QunNum", "id,QunNum,MastQQ,CreateDate,Title,Class,QunText"]}
 
 SQL_config = {'host': 'localhost',
               'port': 3306,

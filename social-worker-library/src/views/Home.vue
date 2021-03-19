@@ -229,9 +229,9 @@
             result_groupdata: [],
             result_quninfo: []
         }),
-        created() {
-            this.clc();
-        },
+        // created() {
+        //     this.clc();
+        // },
         methods: {
             submit_data_QunInfo() {
                 let that = this
