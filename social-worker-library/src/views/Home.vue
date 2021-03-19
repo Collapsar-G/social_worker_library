@@ -69,6 +69,17 @@
                                     <v-spacer></v-spacer>
                                     <v-spacer></v-spacer>
                                     <a> </a>
+                                    <p></p>
+                                    <div v-if="error_qq">
+                                        <v-alert
+                                                icon="mdi-cloud-alert"
+                                                prominent
+                                                text
+                                                type="error"
+                                        >
+                                            参数不能为空
+                                        </v-alert>
+                                    </div>
                                     <div v-if="result_groupdata.code === 200">
 
                                         <v-treeview>
@@ -148,6 +159,17 @@
                                     <v-spacer></v-spacer>
                                     <v-spacer></v-spacer>
                                     <a> </a>
+                                    <p></p>
+                                    <div v-if="error_qun">
+                                        <v-alert
+                                                icon="mdi-cloud-alert"
+                                                prominent
+                                                text
+                                                type="error"
+                                        >
+                                            参数不能为空
+                                        </v-alert>
+                                    </div>
                                     <div v-if="result_quninfo.code === 200">
                                         <v-card-subtitle>
                                             查询结果：
@@ -194,6 +216,8 @@
             leading: false,
             warncard: false,
             happy: false,
+            error_qq: false,
+            error_qun: false,
             config: {
                 "GroupData": {
                     "result_class": {
@@ -237,10 +261,13 @@
                 let that = this
                 that.leading = true
                 that.happy = false
+                that.error_qun =false
+                if (that.config.QunInfo.search_key.QunNum !== ""){
+
+
                 this.axios.post('http://localhost:3268/s/search/', {
                     "database": "QunInfo",
-                    "QunNum": that.config.QunInfo.search_key.QunNum,
-                    "QQNum": that.config.QunInfo.search_key.QQNum
+                    "QunNum": that.config.QunInfo.search_key.QunNum
                 }).then((response) => {
                     console.log(response.data)
                     console.log(that.config.QunInfo.search_key)
@@ -284,12 +311,21 @@
                     console.log("fail", response);
                     that.leading = false
                     that.warncard = true
-                })
+                })}
+                that.error_qun = true
+                that.leading = false
+                that.happy = false
+
+
             },
             submit_data_GroupData() {
                 let that = this
                 that.leading = true
                 that.happy = false
+                that.error_qq = false
+                if ((that.config.QunInfo.search_key.QunNum !== "")&&(that.config.QunInfo.search_key.QunNum !== "")){
+
+
                 this.axios.post('http://localhost:3268/s/search/', {
                     "database": "GroupData",
                     "QunNum": that.config.GroupData.search_key.QunNum,
@@ -337,7 +373,11 @@
                     console.log("fail", response);
                     that.leading = false
                     that.warncard = true
-                })
+                })}
+                that.error_qq = true
+                that.leading = false
+                that.happy = false
+
             },
             clc() {
                 let that = this

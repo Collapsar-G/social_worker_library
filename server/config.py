@@ -26,6 +26,7 @@ class DevelopmentConfig():
 
 class ProductionConfig():
     """实际生产环境配置"""
+    threaded = True
     pass
 
 

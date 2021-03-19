@@ -338,8 +338,6 @@ def data2mysql(root, table_name, primary_key):
 
 ### 社交网络可视化界面
 
-> 暂未实现
-
 #### 可视化后端
 
 在一开始打算做动态的可视化，在搜索社交网络可视化过程中，发现一个名为`netwulf`的python库，效果如下：
@@ -565,6 +563,12 @@ def result2bs64(key, value, n=1):
 
 参考资料：[Networkx绘图和整理功能的参数,networkx,画图,函数参数](https://www.pythonf.cn/read/137465)
 
+****
+
+**warning**：特别要注意的是，由于把生成图的脚本写在了flask的路由里，所以每次生成图片的缓存不会自动清除，每一次查询都会在原图上继续添加节点，在查询资料`G.clear()`可以删除图中的所有结点，但是尝试后不能正常使用，索性将生成图片的函数封装如单独的包 `utils.py`中。
+
+****
+
 实现结果：
 
 ![image-20210318202415299](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318202415.png)
@@ -587,3 +591,9 @@ def result2bs64(key, value, n=1):
 
 
 
+## 参考文献
+
+1. [Networkx绘图和整理功能的参数,networkx,画图,函数参数](https://www.pythonf.cn/read/137465)
+2. [chardet库：识别文件的编码格式](https://zhuanlan.zhihu.com/p/27188439)
+
+3. 

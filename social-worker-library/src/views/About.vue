@@ -183,18 +183,20 @@
                 if (that.QQNum !== "") {
                     key = "QQNum"
                     value = that.QQNum
-                } else if (that.QQNum === "") {
+                } else if (that.QunNum !== "") {
+                    key = "QunNum"
+                    value = that.QunNum
+                } else {
                     that.error = true
                     that.leading = false
                     return
-                } else {
-                    key = "QunNum"
-                    value = that.QunNum
                 }
+                console.log(value,key)
                 this.axios.post('http://127.0.0.1:3268/v/visualization/', {
                     "key": key,
                     "value": value
                 }).then((response) => {
+                    console.log(value,key)
                     console.log(response.data)
                     if (response.data.code === 200) {
                         that.result = response.data
