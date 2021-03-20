@@ -29,7 +29,7 @@ def visualizationdata():
         return jsonify(code=400, msg='参数错误')
     if key not in ["QQNum", "QunNum"]:
         return jsonify(code=400, msg='参数错误')
-    result = result2bs64(key, value, 3)
+    result = result2bs64(key, value, 1)
     if result["code"] == 400:
         return jsonify(code=400, msg='参数错误')
     elif result["code"] == 200:
