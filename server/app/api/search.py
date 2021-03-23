@@ -96,6 +96,7 @@ def searchdata():
                 key = list(content.keys())[len(content) - 1]
                 sql += str(key) + '=' + "'" + str(content[key]) + "'"
                 # print(sql)
+
                 try:
                     # print(sql)
                     result = cur.execute(sql)

@@ -57,8 +57,6 @@ def get_weight(key, value, n):
     node = 0
 
     G = nx.Graph()
-    G.clear()
-    G.clear_edges()
     G = nx.Graph()
     G.add_node(node)
     label2id[str(key + ":" + value)] = node
@@ -152,10 +150,10 @@ def result2bs64(key, value, n):
     result = get_weight(key, value, n)
     if result["code"] == 200:
         G = result["G"]
-        pos = nx.spring_layout(G, iterations=1000)
-        nx.draw(G, pos, with_labels=True, node_size=20, node_color="#F39A9D", edge_color="#FFEAEC", alpha=1.0,
+        pos = nx.spring_layout(G)
+        nx.draw(G, pos,  node_size=30, node_color="#ffa502", edge_color="#70a1ff", alpha=1.0,
                 font_size=8,
-                font_color='#6DB1BF', width=1)
+                font_color='#57606f', width=1)
         # plt.show()
         save_file = BytesIO()
         plt.savefig(save_file, format='png')

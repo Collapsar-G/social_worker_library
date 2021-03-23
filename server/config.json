@@ -1,1 +1,12 @@
-{"resources_list": {"GroupData": ["QQNum,QunNum","id,QQNum,Nick,Age,Gender,Auth,QunNum"], "QunInfo": ["QunNum","id,QunNum,MastQQ,CreateDate,Title,Class,QunText"]}}
+{
+  "resources_list": {
+    "GroupData": [
+      "QQNum,QunNum",
+      "id,QQNum,Nick,Age,Gender,Auth,QunNum"
+    ],
+    "QunInfo": [
+      "QunNum",
+      "id,QunNum,MastQQ,CreateDate,Title,Class,QunText"
+    ]
+  }
+}

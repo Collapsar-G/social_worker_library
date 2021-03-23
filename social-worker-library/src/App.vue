@@ -36,6 +36,8 @@
                 <v-tabs-slider color="white"/>
                 <v-tab @click="toQQGroupSearch">数据查询</v-tab>
                 <v-tab @click="toHelloWorld">数据可视化</v-tab>
+                <v-tab @click="toAntv">数据可视化 2.0</v-tab>
+<!--                <v-tab @click="totest">test</v-tab>-->
             </v-tabs>
             <v-btn
                     href="https://www.zhihu.com/question/27024854"
@@ -150,6 +152,12 @@ import url from './components/url.vue'
             toQQGroupSearch() {
                 this.$router.push({path: './'})
             },
+            toAntv() {
+                this.$router.push({path: './antv'})
+            },
+            // totest() {
+            //     this.$router.push({path: './test'})
+            // },
             toHelloWorld() {
                 this.$router.push({path: './about'})
             },

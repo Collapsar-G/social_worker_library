@@ -597,6 +597,18 @@ save_file = BytesIO()
 
 ![image-20210318203017762](https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210318203017.png)
 
+### 可视化2.0
+
+利用了蚂蚁的antv/G6框架，实现了数据的实时可视化，双击节点继续查询。
+
+
+<video id="video" controls="" preload="none" poster="https://cdn.jsdelivr.net/gh/Collapsar-G/image/img/20210323115310.png">
+      <source id="mkv" src="https://cloud.collapsar.online/2021-03-23%2011-48-38.mkv" type="video/mkv">
+      </video>
+参考链接：https://g6.antv.vision/zh/examples/net/forceDirected#forceDirectedPreventOverlap
+
+代码：
+
 ### Docker部署
 
 > windows下Docker安装出现了bug，暂时还没有配置好Docker环境，暂未实现。
