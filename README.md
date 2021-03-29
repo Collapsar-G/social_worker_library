@@ -607,7 +607,7 @@ save_file = BytesIO()
       </video>
 参考链接：https://g6.antv.vision/zh/examples/net/forceDirected#forceDirectedPreventOverlap
 
-代码：
+代码：https://github.com/Collapsar-G/social_worker_library
 
 ### Docker部署
 
@@ -623,3 +623,5 @@ save_file = BytesIO()
 
 1. [Networkx绘图和整理功能的参数,networkx,画图,函数参数](https://www.pythonf.cn/read/137465)
 2. [chardet库：识别文件的编码格式](https://zhuanlan.zhihu.com/p/27188439)
+3. [antv](https://g6.antv.vision/zh/examples/net/forceDirected#forceDirectedPreventOverlap)
+

@@ -34,7 +34,7 @@
                     color="white"
             >
                 <v-tabs-slider color="white"/>
-                <v-tab @click="toQQGroupSearch">数据查询</v-tab>
+                <v-tab @click="toQQGroupSearch">数据查询及其可视化</v-tab>
                 <v-tab @click="toHelloWorld">数据可视化</v-tab>
                 <v-tab @click="toAntv">数据可视化 2.0</v-tab>
 <!--                <v-tab @click="totest">test</v-tab>-->

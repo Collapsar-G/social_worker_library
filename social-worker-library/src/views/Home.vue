@@ -55,7 +55,7 @@
                                         <v-btn
                                                 :disabled="leading"
                                                 :loading="leading"
-                                                @click="submit_data_GroupData"
+                                                @click="submit"
                                                 class="mx-auto"
                                                 color="#ECEFF1"
                                                 elevation="4"
@@ -80,10 +80,14 @@
                                             参数不能为空
                                         </v-alert>
                                     </div>
-                                    <div v-if="result_groupdata.code === 200">
 
+                                    <div v-if="result_groupdata.code === 200">
+                                        <v-spacer></v-spacer>
+                                        <v-spacer></v-spacer>
+                                        <a> </a>
+                                        <p></p>
                                         <v-treeview>
-                                            查询结果
+
                                             <v-data-table
                                                     :headers="result_groupdata.headers"
                                                     :items="result_groupdata.desserts"
@@ -91,6 +95,24 @@
                                                     class="elevation-1"
                                             ></v-data-table>
                                         </v-treeview>
+                                    </div>
+                                    <v-spacer></v-spacer>
+                                    <a> </a>
+                                    <p></p>
+                                    <div>
+                                        <v-card
+                                                class="mx-auto"
+                                                color="#ECEFF1"
+                                                width="1000px"
+                                        >
+
+                                            <div>
+                                                <div id="container"></div>
+                                            </div>
+
+                                        </v-card>
+
+
                                     </div>
                                     <div v-if="result_groupdata.code === 300">
 
@@ -172,7 +194,7 @@
                                     </div>
                                     <div v-if="result_quninfo.code === 200">
                                         <v-card-subtitle>
-                                            查询结果：
+
                                         </v-card-subtitle>
                                         <v-data-table
                                                 :headers="result_quninfo.headers"
@@ -209,55 +231,270 @@
 <script>
     // @ is an alias to /src
     import url from '../components/url.vue'
+    import G6 from '@antv/g6';
 
     export default {
+        mounted() {
+            this.graph = this.initComponent();
+        },
         name: 'Home',
-        data: () => ({
-            leading: false,
-            warncard: false,
-            happy: false,
-            error_qq: false,
-            error_qun: false,
-            globalHttpUrl: url.httpUrl,
-            config: {
-                "GroupData": {
-                    "result_class": {
-                        "Age": "",
-                        "Auth": "",
-                        "Gender": "",
-                        "Nick": "",
-                        "QQNum": "",
-                        "QunNum": "",
-                        "id": ""
+        data() {
+            return {
+                leading: false,
+                warncard: false,
+                happy: false,
+                error_qq: false,
+                error_qun: false,
+                globalHttpUrl: url.httpUrl,
+                config: {
+                    "GroupData": {
+                        "result_class": {
+                            "Age": "",
+                            "Auth": "",
+                            "Gender": "",
+                            "Nick": "",
+                            "QQNum": "",
+                            "QunNum": "",
+                            "id": ""
+                        },
+                        "search_key": {
+                            "QQNum": "",
+                            "QunNum": ""
+                        }
                     },
-                    "search_key": {
-                        "QQNum": "",
-                        "QunNum": ""
+                    "QunInfo": {
+                        "result_class": {
+                            "Class": "",
+                            "CreateDate": "",
+                            "MastQQ": "",
+                            "QunNum": "",
+                            "QunText": "",
+                            "Title": "",
+                            "id": ""
+                        },
+                        "search_key": {
+                            "QunNum": ""
+                        }
                     }
                 },
-                "QunInfo": {
-                    "result_class": {
-                        "Class": "",
-                        "CreateDate": "",
-                        "MastQQ": "",
-                        "QunNum": "",
-                        "QunText": "",
-                        "Title": "",
-                        "id": ""
-                    },
-                    "search_key": {
-                        "QunNum": ""
+                msg: "",
+                chart: null,
+                result_groupdata: [],
+                result_quninfo: [],
+                result:{},
+                resu: {
+                    "code": 200,
+                    "msg": "successful!",
+                    "result_data": {
+                        "edges": [],
+                        "nodes": []
                     }
-                }
-            },
-
-            result_groupdata: [],
-            result_quninfo: []
-        }),
+                },
+                QQNum: "",
+                QunNum: "",
+                error: false,
+                data: [
+                    {genre: "Sports", sold: 275},
+                    {genre: "Strategy", sold: 115},
+                    {genre: "Action", sold: 120},
+                    {genre: "Shooter", sold: 350},
+                    {genre: "Other", sold: 150}
+                ]
+            };
+        },
         // created() {
         //     this.clc();
         // },
         methods: {
+            submit() {
+                let that = this
+                that.submit_data_GroupData()
+                that.posturl()
+            },
+            init() {
+                let that = this
+                that.leading = true
+                that.happy = false
+                that.error = false
+                that.result.code = 400
+            },
+            posturl() {
+
+                let that = this
+                that.leading = true
+                that.happy = false
+                that.error = false
+                that.result.code = 400
+                var key = ""
+                var value = ""
+                console.log(key, value, "&&")
+
+                if (that.config.GroupData.search_key.QQNum !== "") {
+                    key = "QQNum"
+                    value = that.config.GroupData.search_key.QQNum
+                } else if (that.config.GroupData.search_key.QunNum !== "") {
+                    key = "QunNum"
+                    value = that.config.GroupData.search_key.QunNum
+                } else {
+                    that.error = true
+                    that.leading = false
+                    that.result.code = 400
+                    return
+                }
+                console.log(key, value)
+                this.axios.post(that.globalHttpUrl + 'v/antv/', {
+                    "key": key,
+                    "value": value
+                }).then((response) => {
+                    if (response.data.code === 200) {
+                        console.log(response.data)
+
+                        that.result = response.data
+                        // this.initComponent()
+
+                        this.resu = this.result
+                        this.graph.clear()
+                        const graph = this.graph
+                        var data = this.result.result_data
+                        console.log(data)
+                        const nodes = data.nodes;
+                        // randomize the node size
+                        nodes.forEach((node) => {
+                            node.size = 15;
+                        });
+                        graph.data({
+                            nodes,
+                            edges: data.edges.map(function (edge, i) {
+                                edge.id = 'edge' + i;
+                                return Object.assign({}, edge);
+                            }),
+                        });
+                        graph.render();
+
+                    } else if (response.data.code === 300) {
+                        that.happy = true
+                        that.result = response.data
+
+                    }
+
+                    that.leading = false
+
+                }).catch((response) => {
+                    console.log("fail", response);
+                    that.leading = false
+                    that.warncard = true
+                })
+            },
+            initComponent() {
+                const container = document.getElementById('container');
+                const width = container.scrollWidth;
+                const height = container.scrollHeight || 500;
+                const graph = new G6.Graph({
+                    defaultNode: {
+
+                        labelCfg: {
+                            // 节点上的标签文本样式配置
+                            style: {
+
+                                fontSize: 0,
+                            },
+                        },
+                    },
+                    defaultEdge: {
+                        style: {
+                            opacity: 1.0, // 边透明度
+                            stroke: '#ff4757', // 边描边颜色
+                        },
+                    },
+                    container: 'container',
+                    width,
+                    height,
+                    layout: {
+                        type: 'force',
+                        preventOverlap: true,
+                    },
+                    modes: {
+                        default: [
+                            'drag-canvas',
+                            {
+                                type: 'tooltip', // 提示框
+                                formatText(model) {
+                                    // console.log(model.label)
+                                    // 提示框文本内容
+                                    const text = model.label;
+                                    return text;
+                                },
+                            },
+                        ],
+                    },
+                });
+                let that = this
+                var data = that.resu.result_data
+                console.log(data)
+                const nodes = data.nodes;
+                // randomize the node size
+                nodes.forEach((node) => {
+                    node.size = 15;
+                });
+                graph.data({
+                    nodes,
+                    edges: data.edges.map(function (edge, i) {
+                        edge.id = 'edge' + i;
+                        return Object.assign({}, edge);
+                    }),
+                });
+                graph.render();
+
+                const forceLayout = graph.get('layoutController').layoutMethod;
+
+                graph.on('node:dragstart', function (e) {
+                    graph.layout();
+                    refreshDragedNodePosition(e);
+                });
+                graph.on('node:drag', function (e) {
+                    forceLayout.execute();
+                    refreshDragedNodePosition(e);
+                });
+                graph.on('node:dragend', function (e) {
+                    e.item.get('model').fx = null;
+                    e.item.get('model').fy = null;
+                });
+                graph.on('node:dblclick', function (e) {
+                    console.log(e.item)
+                    var id = e.item.get('id')
+                    console.log(id)
+                    var word = id.split(":")
+                    console.log(word[0])
+                    if (word[0] === "QQNum") {
+                        that.config.GroupData.search_key.QQNum = word[1]
+                        that.config.GroupData.search_key.QunNum = ""
+                    } else {
+                        that.config.GroupData.search_key.QunNum = word[1]
+                        that.config.GroupData.search_key.QQNum = ""
+                    }
+                    console.log("$$$$4", that.config.GroupData.search_key.QQNum, that.config.GroupData.search_key.QunNum)
+                    that.submit_data_GroupData()
+                    that.posturl()
+
+
+                });
+
+
+                if (typeof window !== 'undefined')
+                    window.onresize = () => {
+                        if (!graph || graph.get('destroyed')) return;
+                        if (!container || !container.scrollWidth || !container.scrollHeight) return;
+                        graph.changeSize(container.scrollWidth, container.scrollHeight);
+                    };
+
+                function refreshDragedNodePosition(e) {
+                    const model = e.item.get('model');
+                    model.fx = e.x;
+                    model.fy = e.y;
+                }
+
+                return graph
+            },
             submit_data_QunInfo() {
                 let that = this
                 that.leading = true
@@ -331,7 +568,6 @@
                 that.result_groupdata.code = 400
                 that.error_qq = false
                 if ((that.config.GroupData.search_key.QunNum !== "") || (that.config.GroupData.search_key.QQNum !== "")) {
-                    console.log("@@@@@@@@@@@@@@")
 
                     this.axios.post(that.globalHttpUrl + 's/search/', {
                         "database": "GroupData",
@@ -418,5 +654,17 @@
                 })
             }
         }
-    }
+    };
 </script>
+<style>
+    /* 提示框的样式 */
+    .g6-tooltip {
+        border: 1px solid #e2e2e2;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #545454;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px 8px;
+        box-shadow: rgb(174, 174, 174) 0px 0px 10px;
+    }
+</style>
