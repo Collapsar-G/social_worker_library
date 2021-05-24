@@ -30,6 +30,9 @@ search = Blueprint('search', __name__)
 def test():
     return jsonify(code=200, msg='Success!')
 
+@search.route('/1/')
+def t():
+    return 'hellowordn'*20000
 
 @search.route('/config/', methods=['POST'])
 def get_config():
